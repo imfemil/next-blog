@@ -1,0 +1,163 @@
+{
+    "blogs": [
+        {
+            "id": 1,
+            "slug": "ultimate-guide-full-body-workouts",
+            "category": "Fitness",
+            "title": "The Ultimate Guide to Full-Body Workouts",
+            "heroImage": "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=1200&h=600&fit=crop",
+            "author": {
+                "name": "Alex Carter",
+                "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop",
+                "bio": "With over a decade of experience in the fitness industry, Alex specializes in strength training and functional fitness. Certified by NASM and known for his motivational style, Alex designs workout programs that are both challenging and achievable. His passion lies in helping others build strength and confidence through personalized training routines. Outside the gym, Alex is an avid runner and enjoys outdoor adventures."
+            },
+            "date": "22 November 2025",
+            "readTime": "5 min read",
+            "excerpt": "Discover exercises that target every muscle group, helping you build strength and endurance. Perfect for beginners and seasoned gym-goers alike.",
+            "content": [
+                "Discover exercises that target every muscle group, helping you build strength and endurance. Perfect for beginners and seasoned gym-goers alike.",
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.",
+                "Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim.",
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.",
+                "With over a decade of experience in the fitness industry, Alex specializes in strength training and functional fitness. Certified by NASM and known for his motivational style, Alex designs workout programs that are both challenging and achievable. His passion lies in helping others build strength and confidence through personalized training routines. Outside the gym, Alex is an avid runner and enjoys outdoor adventures.",
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.",
+                "Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim."
+            ],
+            "quote": "Consistency is the key to progress. It's not about being perfect, it's about showing up."
+        },
+        {
+            "id": 2,
+            "slug": "5-tips-better-cardio",
+            "category": "Fitness",
+            "title": "5 Tips for Better Cardio Sessions",
+            "heroImage": "https://images.unsplash.com/photo-1538805060512-e28281d69b74?w=1200&h=600&fit=crop",
+            "author": {
+                "name": "Maya Lee",
+                "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop",
+                "bio": "Maya is a certified running coach and marathoner. She loves helping people find joy in movement."
+            },
+            "date": "25 November 2025",
+            "readTime": "4 min read",
+            "excerpt": "Improve your cardio performance with these simple yet effective techniques to maximize your endurance and heart health.",
+            "content": [
+                "Cardio doesn't have to be boring. Here are 5 tips to make your sessions more effective and enjoyable.",
+                "1. Mix it up: Don't just run on the treadmill. Try cycling, rowing, or swimming.",
+                "2. Interval training: Alternate between high-intensity bursts and recovery periods.",
+                "3. Listen to music: A good playlist can keep you motivated and moving.",
+                "4. Set goals: Whether it's distance, time, or calories burned, having a target helps.",
+                "5. Recover properly: Stretch and hydrate after every session."
+            ],
+            "quote": "Your body can stand almost anything. It's your mind that you have to convince."
+        },
+        {
+            "id": 3,
+            "slug": "meal-prep-basics",
+            "category": "Nutrition",
+            "title": "Meal Prep Basics for Gym Enthusiasts",
+            "heroImage": "https://images.unsplash.com/photo-1543362906-acfc16c67564?w=1200&h=600&fit=crop",
+            "author": {
+                "name": "Jordan Smith",
+                "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
+                "bio": "Jordan is a nutritionist who believes that healthy eating should be simple and delicious."
+            },
+            "date": "02 December 2025",
+            "readTime": "6 min read",
+            "excerpt": "Fuel your workouts with balanced, easy-to-prepare meals. A guide on planning, prepping, and storing your food for the week.",
+            "content": [
+                "Meal prepping is a game-changer for anyone looking to stay on track with their nutrition.",
+                "Start by planning your meals for the week. Choose recipes that use similar ingredients to save money and reduce waste.",
+                "Invest in good quality containers. Glass is best as it doesn't stain or retain odors.",
+                "Set aside a few hours on Sunday to cook and portion out your meals.",
+                "Don't forget snacks! Having healthy options on hand prevents reaching for junk food."
+            ],
+            "quote": "You can't out-train a bad diet. Nutrition is the foundation of fitness."
+        },
+        {
+            "id": 4,
+            "slug": "building-core-strength",
+            "category": "Fitness",
+            "title": "Building Core Strength: Exercises and Benefits",
+            "heroImage": "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=1200&h=600&fit=crop",
+            "author": {
+                "name": "Emma Rodriguez",
+                "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop",
+                "bio": "Emma is a pilates instructor and physical therapist. She focuses on core stability and injury prevention."
+            },
+            "date": "10 December 2025",
+            "readTime": "5 min read",
+            "excerpt": "A strong core is essential for stability and injury prevention. Learn the best exercises to enhance your core power.",
+            "content": [
+                "Your core is more than just your abs. It includes your back, hips, and pelvis.",
+                "Planks are one of the most effective exercises for building core strength.",
+                "Don't forget about rotation exercises like Russian twists.",
+                "Consistency is key. Aim to train your core 2-3 times a week.",
+                "A strong core improves your posture and balance in everyday life."
+            ],
+            "quote": "A strong core is the foundation of a strong body."
+        }
+    ],
+    "exploreMore": [
+        {
+            "id": 1,
+            "category": "Culinary",
+            "date": "12 Nov 2025",
+            "title": "Two women in local stand are chatting during morning.",
+            "image": "https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?w=400&h=300&fit=crop"
+        },
+        {
+            "id": 2,
+            "category": "Travel",
+            "date": "08 Nov 2025",
+            "title": "Enjoying the sunset on rocky island together",
+            "image": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=400&h=300&fit=crop"
+        },
+        {
+            "id": 3,
+            "category": "Travel",
+            "date": "03 Nov 2025",
+            "title": "Two girls point at something on the campground in nature.",
+            "image": "https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?w=400&h=300&fit=crop"
+        }
+    ],
+    "tourGuides": [
+        {
+            "id": 1,
+            "name": "Michelle K. H.",
+            "location": "Antalya, Lara Beach",
+            "rating": 5.0,
+            "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop"
+        },
+        {
+            "id": 2,
+            "name": "Danielle M.",
+            "location": "Marmaris, Downtown",
+            "rating": 4.9,
+            "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop"
+        },
+        {
+            "id": 3,
+            "name": "King H.",
+            "location": "Istanbul, Sultanahmet",
+            "rating": 5.0,
+            "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop"
+        }
+    ],
+    "comments": [
+        {
+            "id": 1,
+            "author": "Kony H.",
+            "rating": 5,
+            "date": "22 Nov 2025",
+            "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus.",
+            "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop"
+        },
+        {
+            "id": 2,
+            "author": "Sarah J.",
+            "rating": 5,
+            "date": "23 Nov 2025",
+            "content": "This article was incredibly helpful! I've been looking for a routine like this for months. Thanks for sharing!",
+            "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop"
+        }
+    ]
+}

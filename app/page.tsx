@@ -1,13 +1,56 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Clock, ArrowRight, MapPin } from 'lucide-react';
-import { useGetBlogsQuery } from '@/lib/features/api/apiSlice';
-import { Loader2 } from 'lucide-react';
+import dynamic from 'next/dynamic';
+import { Clock, ArrowRight, MapPin, Edit2, Loader2 } from 'lucide-react';
+import { useGetBlogsQuery, useUpdateBlogMutation } from '@/lib/features/api/apiSlice';
+import toast from 'react-hot-toast';
+
+import { IBlog } from '@/types';
+
+// Dynamically load the BlogEditor component
+const BlogEditor = dynamic(() => import('@/components/BlogEditor'), {
+  loading: () => (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+      <div className="bg-white p-8 rounded-2xl shadow-xl flex flex-col items-center gap-4">
+        <Loader2 className="w-8 h-8 animate-spin text-black" />
+        <p className="font-bold text-gray-900">Loading Editor...</p>
+      </div>
+    </div>
+  ),
+  ssr: false // Editor is client-side only
+});
 
 export default function Home() {
   const { data: blogs = [], isLoading, error } = useGetBlogsQuery(undefined);
+  const [updateBlog, { isLoading: isUpdating }] = useUpdateBlogMutation();
+  const [editingBlog, setEditingBlog] = useState<IBlog | null>(null);
+
+  const handleEditClick = (e: React.MouseEvent, blog: IBlog) => {
+    e.preventDefault(); // Prevent navigation
+    e.stopPropagation(); // Stop event bubbling
+    setEditingBlog(blog);
+  };
+
+  const handleSaveBlog = async (updatedBlog: Partial<IBlog>) => {
+    if (!updatedBlog.slug) return;
+
+    try {
+      await updateBlog({
+        slug: updatedBlog.slug,
+        title: updatedBlog.title,
+        content: updatedBlog.content
+      }).unwrap();
+
+      toast.success('Story updated successfully! 🚀');
+      setEditingBlog(null);
+    } catch (err) {
+      console.error('Failed to update blog:', err);
+      toast.error('Failed to update story. Please try again.');
+    }
+  };
 
   if (isLoading) {
     return (
@@ -67,85 +110,110 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10 lg:gap-12">
-          {blogs.map((blog: any, index: number) => (
-            <Link
-              key={blog._id || blog.id}
-              href={`/blog/${blog.slug}`}
-              className="group block h-full animate-slide-up"
+          {blogs.map((blog: IBlog, index: number) => (
+            <div
+              key={blog._id}
+              className="group block h-full animate-slide-up relative"
               style={{ animationDelay: `${index * 100}ms` }}
             >
-              <article className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 h-full flex flex-col border border-gray-100">
-                {/* Blog Image */}
-                <div className="relative h-72 md:h-80 w-full overflow-hidden bg-gray-200">
-                  <Image
-                    src={blog.heroImage}
-                    alt={blog.title}
-                    fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-700"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    priority={index < 2}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-500"></div>
+              <Link
+                href={`/blog/${blog.slug}`}
+                className="block h-full"
+                aria-label={`Read full story: ${blog.title}`}
+              >
+                <article className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 h-full flex flex-col border border-gray-100">
+                  {/* Blog Image */}
+                  <div className="relative h-72 md:h-80 w-full overflow-hidden bg-gray-200">
+                    <Image
+                      src={blog.heroImage}
+                      alt={blog.title}
+                      fill
+                      className="object-cover group-hover:scale-110 transition-transform duration-700"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      priority={index < 2}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-500"></div>
 
-                  {/* Category Badge */}
-                  <div className="absolute top-4 left-4">
-                    <span className="inline-flex items-center gap-1.5 bg-white/95 backdrop-blur-sm px-4 py-2 rounded-full text-xs font-bold text-indigo-600 uppercase tracking-wide shadow-lg group-hover:bg-indigo-600 group-hover:text-white transition-colors duration-300">
-                      <MapPin className="w-3.5 h-3.5" />
-                      {blog.category}
-                    </span>
-                  </div>
-
-                  {/* Author Badge */}
-                  <div className="absolute bottom-4 left-4 flex items-center gap-3">
-                    <div className="relative w-10 h-10 rounded-full overflow-hidden ring-2 ring-white shadow-lg">
-                      <Image
-                        src={blog.author.avatar}
-                        alt={blog.author.name}
-                        fill
-                        className="object-cover"
-                        sizes="40px"
-                      />
+                    {/* Category Badge */}
+                    <div className="absolute top-4 left-4">
+                      <span className="inline-flex items-center gap-1.5 bg-white/95 backdrop-blur-sm px-4 py-2 rounded-full text-xs font-bold text-indigo-600 uppercase tracking-wide shadow-lg group-hover:bg-indigo-600 group-hover:text-white transition-colors duration-300">
+                        <MapPin className="w-3.5 h-3.5" />
+                        {blog.category}
+                      </span>
                     </div>
-                    <div className="text-white">
-                      <p className="text-sm font-bold drop-shadow-lg">{blog.author.name}</p>
-                      <p className="text-xs text-white/90">{blog.date}</p>
-                    </div>
-                  </div>
-                </div>
 
-                {/* Blog Content */}
-                <div className="p-6 md:p-8 flex-1 flex flex-col">
-                  {/* Meta Info */}
-                  <div className="flex items-center gap-4 mb-4 text-xs text-gray-500">
-                    <div className="flex items-center gap-1.5">
-                      <Clock className="w-3.5 h-3.5" />
-                      <span>{blog.readTime}</span>
+                    {/* Author Badge */}
+                    <div className="absolute bottom-4 left-4 flex items-center gap-3">
+                      <div className="relative w-10 h-10 rounded-full overflow-hidden ring-2 ring-white shadow-lg">
+                        <Image
+                          src={blog.author.avatar}
+                          alt={blog.author.name}
+                          fill
+                          className="object-cover"
+                          sizes="40px"
+                        />
+                      </div>
+                      <div className="text-white">
+                        <p className="text-sm font-bold drop-shadow-lg">{blog.author.name}</p>
+                        <p className="text-xs text-white/90">{blog.date}</p>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Title */}
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4 leading-tight group-hover:text-indigo-600 transition-colors line-clamp-2">
-                    {blog.title}
-                  </h3>
+                  {/* Blog Content */}
+                  <div className="p-6 md:p-8 flex-1 flex flex-col">
+                    {/* Meta Info */}
+                    <div className="flex items-center gap-4 mb-4 text-xs text-gray-500">
+                      <div className="flex items-center gap-1.5">
+                        <Clock className="w-3.5 h-3.5" />
+                        <span>{blog.readTime}</span>
+                      </div>
+                    </div>
 
-                  {/* Excerpt */}
-                  <p className="text-gray-600 text-base leading-relaxed mb-6 line-clamp-3 flex-1">
-                    {blog.excerpt}
-                  </p>
+                    {/* Title */}
+                    <h3 className="text-2xl font-bold text-gray-900 mb-4 leading-tight group-hover:text-indigo-600 transition-colors line-clamp-2">
+                      {blog.title}
+                    </h3>
 
-                  {/* CTA */}
-                  <div className="pt-4 mt-auto">
-                    <div className="w-full bg-black hover:bg-gray-800 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 group-hover:-translate-y-0.5">
-                      <span>Read Story</span>
-                      <ArrowRight className="w-4 h-4" />
+                    {/* Excerpt */}
+                    <p className="text-gray-600 text-base leading-relaxed mb-6 line-clamp-3 flex-1">
+                      {blog.excerpt}
+                    </p>
+
+                    {/* CTA */}
+                    <div className="pt-4 mt-auto">
+                      <div className="w-full bg-black hover:bg-gray-800 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 group-hover:-translate-y-0.5">
+                        <span aria-hidden="true">Read Story</span>
+                        <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                      </div>
                     </div>
                   </div>
-                </div>
-              </article>
-            </Link>
+                </article>
+              </Link>
+
+              {/* Edit Button - Positioned absolutely on top of the card */}
+              <button
+                onClick={(e) => handleEditClick(e, blog)}
+                className="absolute top-4 right-4 z-20 bg-white/90 backdrop-blur-md p-2.5 rounded-full shadow-lg hover:bg-black hover:text-white transition-all duration-300 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0"
+                title="Edit Story"
+                aria-label={`Edit story: ${blog.title}`}
+              >
+                <Edit2 className="w-4 h-4" aria-hidden="true" />
+              </button>
+            </div>
           ))}
         </div>
       </section>
+
+      {/* Dynamic Editor Modal */}
+      {editingBlog && (
+        <BlogEditor
+          blog={editingBlog}
+          onClose={() => setEditingBlog(null)}
+          onSave={handleSaveBlog}
+          isSaving={isUpdating}
+        />
+      )}
     </div>
   );
 }

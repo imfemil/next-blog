@@ -1,20 +1,99 @@
 @import "tailwindcss";
 
 :root {
+  /* Base Palette */
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+  /* Semantic Colors */
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #111827;
+  /* Gray 900 */
+
+  --primary: #2563eb;
+  /* Blue 600 */
+  --primary-foreground: #ffffff;
+
+  --secondary: #f3f4f6;
+  /* Gray 100 */
+  --secondary-foreground: #1f2937;
+  /* Gray 800 */
+
+  --muted: #f9fafb;
+  /* Gray 50 */
+  --muted-foreground: #6b7280;
+  /* Gray 500 */
+
+  --accent: #f59e0b;
+  /* Amber 500 */
+  --accent-foreground: #ffffff;
+
+  --destructive: #ef4444;
+  /* Red 500 */
+  --destructive-foreground: #ffffff;
+
+  --border: #e5e7eb;
+  /* Gray 200 */
+  --input: #e5e7eb;
+  --ring: #2563eb;
+
+  --radius: 0.5rem;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
   --font-sans: var(--font-lato);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+
+    --primary: #3b82f6;
+    /* Blue 500 */
+    --primary-foreground: #ffffff;
+
+    --secondary: #1f2937;
+    /* Gray 800 */
+    --secondary-foreground: #f9fafb;
+    /* Gray 50 */
+
+    --muted: #171717;
+    /* Neutral 900 */
+    --muted-foreground: #a3a3a3;
+    /* Neutral 400 */
+
+    --border: #262626;
+    /* Neutral 800 */
+    --input: #262626;
+    --ring: #1d4ed8;
+    /* Blue 700 */
   }
 }
 

@@ -1,0 +1,146 @@
+.slider {
+    border-top: 1px solid var(--border);
+    padding-top: 3rem;
+    margin-top: 3rem;
+    margin-bottom: 3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+}
+
+.title {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--foreground);
+    margin-bottom: 0.5rem;
+}
+
+.role {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 1.5rem;
+}
+
+.container {
+    position: relative;
+    width: 100%;
+    max-width: 42rem;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 0.5rem;
+    border-radius: 9999px;
+    background-color: var(--background);
+    border: 1px solid var(--border);
+    color: var(--muted-foreground);
+    transition: all 0.2s;
+    z-index: 10;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-btn:hover {
+    color: var(--foreground);
+    border-color: var(--foreground);
+}
+
+.nav-btn--prev {
+    left: 0;
+}
+
+.nav-btn--next {
+    right: 0;
+}
+
+@media (min-width: 768px) {
+    .nav-btn--prev {
+        left: -3rem;
+    }
+
+    .nav-btn--next {
+        right: -3rem;
+    }
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.content-anim {
+    animation: slideInRight 0.5s ease-out forwards;
+}
+
+.avatar-wrapper {
+    position: relative;
+    width: 6rem;
+    height: 6rem;
+    border-radius: 9999px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    border: 4px solid var(--muted);
+}
+
+.bio {
+    color: var(--muted-foreground);
+    font-style: italic;
+    line-height: 1.625;
+    max-width: 36rem;
+    padding: 0 1rem;
+}
+
+.dots {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+}
+
+.dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 9999px;
+    transition: all 0.3s;
+    background-color: var(--border);
+    cursor: pointer;
+    border: none;
+    padding: 0;
+}
+
+.dot:hover {
+    background-color: var(--muted-foreground);
+}
+
+.dot--active {
+    background-color: var(--foreground);
+    width: 1rem;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}

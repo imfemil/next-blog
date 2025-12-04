@@ -2,6 +2,22 @@
 
 NextBlog is a high-performance, accessible, and dynamic travel blog application built with **Next.js 15 (App Router)**, **TypeScript**, and **Tailwind CSS**. It features server-side rendering, static site generation, interactive comments, and a robust design system.
 
+## 📸 Screenshots
+
+<div align="center">
+  <h3>Home Page</h3>
+  <img src="public/main-page-title.png" alt="Home Page" width="800" />
+  
+  <h3>Blog Listing</h3>
+  <img src="public/blog-list.png" alt="Blog Listing" width="800" />
+
+  <h3>Blog Detail</h3>
+  <img src="public/blog-detail.png" alt="Blog Detail" width="800" />
+
+  <h3>Blog Editor</h3>
+  <img src="public/blog-edit.png" alt="Blog Editor" width="800" />
+</div>
+
 ## 🚀 Features
 
 -   **Modern Tech Stack**: Built with Next.js 15, React 19, and Redux Toolkit.

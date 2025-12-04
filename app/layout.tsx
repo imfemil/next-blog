@@ -1,21 +1,22 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Lato } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const lato = Lato({
+  variable: "--font-lato",
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  weight: ["100", "300", "400", "700", "900"],
 });
 
 export const metadata: Metadata = {
   title: "NextBlog - Modern Web Development",
   description: "A blog about web development, design, and technology.",
 };
+
+import StoreProvider from "./StoreProvider";
+import { Toaster } from 'react-hot-toast';
+
+// ... existing imports
 
 export default function RootLayout({
   children,
@@ -25,11 +26,14 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
+        className={`${lato.variable} antialiased flex flex-col min-h-screen`}
       >
-        <main className="flex-1">
-          {children}
-        </main>
+        <StoreProvider>
+          <main className="flex-1">
+            {children}
+          </main>
+          <Toaster position="bottom-right" toastOptions={{ duration: 4000 }} />
+        </StoreProvider>
       </body>
     </html>
   );

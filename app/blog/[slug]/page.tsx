@@ -1,15 +1,16 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, use } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { Star, MapPin, ChevronLeft, ArrowRight, Frown, Meh, Smile, SmilePlus, Laugh, Clock, User, ChevronRight } from 'lucide-react';
-import blogsData from '@/data/blogs.json';
-import { Button } from '@/components/ui/Button';
+import { Star, MapPin, ChevronLeft, ArrowRight, Frown, Meh, Smile, SmilePlus, Laugh, Clock, User, ChevronRight, Loader2 } from 'lucide-react';
 import { notFound } from 'next/navigation';
-import { use } from 'react';
+import { useGetBlogBySlugQuery, useGetBlogsQuery, useGetTourGuidesQuery, useGetCommentsQuery, useAddCommentMutation } from '@/lib/features/api/apiSlice';
+import { Skeleton } from '@/components/ui/Skeleton';
+import toast from 'react-hot-toast';
+import { BlogDetailSkeleton } from '@/components/BlogDetailSkeleton';
 
 // Enhanced Rating Selector matching the design
 const RatingSelector = ({ value, onChange }: { value: string; onChange: (val: string) => void }) => {
@@ -157,49 +158,102 @@ const AuthorSlider = () => {
     );
 };
 
+const CommentSkeleton = () => (
+    <div className="space-y-8">
+        {[1, 2, 3].map((i) => (
+            <div key={i} className="flex gap-6 animate-pulse">
+                <Skeleton className="w-12 h-12 rounded-full flex-shrink-0" />
+                <div className="flex-1 space-y-3">
+                    <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-3">
+                            <Skeleton className="h-5 w-32" />
+                            <Skeleton className="h-4 w-20" />
+                        </div>
+                        <Skeleton className="h-3 w-24" />
+                    </div>
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-5/6" />
+                </div>
+            </div>
+        ))}
+    </div>
+);
+
 interface PageProps {
     params: Promise<{ slug: string }>;
 }
 
 export default function BlogPost({ params }: PageProps) {
     const resolvedParams = use(params);
-    const { blogs, exploreMore, tourGuides, comments } = blogsData;
-    const blog = blogs.find(b => b.slug === resolvedParams.slug);
-    const [rating, setRating] = useState('good');
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const { slug } = resolvedParams;
 
-    if (!blog) {
-        notFound();
-    }
+    const { data: blog, isLoading: isBlogLoading } = useGetBlogBySlugQuery(slug);
+    const { data: allBlogs = [] } = useGetBlogsQuery(undefined);
+    const { data: tourGuides = [] } = useGetTourGuidesQuery(undefined);
+    const { data: comments = [], isLoading: isCommentsLoading } = useGetCommentsQuery(slug);
+    const [addComment, { isLoading: isSubmitting }] = useAddCommentMutation();
+
+    const [rating, setRating] = useState('good');
 
     const formik = useFormik({
         initialValues: {
             name: '',
             email: '',
-            comment: '',
+            content: '',
         },
         validationSchema: Yup.object({
             name: Yup.string().required('Name is required'),
             email: Yup.string().email('Invalid email address').required('Email is required'),
-            comment: Yup.string().min(10, 'Comment must be at least 10 characters').required('Comment is required'),
+            content: Yup.string().min(10, 'Content must be at least 10 characters').required('Content is required'),
         }),
         onSubmit: async (values) => {
-            setIsSubmitting(true);
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            console.log({ ...values, rating });
-            alert('Comment submitted successfully!');
-            formik.resetForm();
-            setRating('good');
-            setIsSubmitting(false);
+            try {
+                // Map rating string to number
+                const ratingMap: Record<string, number> = {
+                    'bad': 1,
+                    'average': 2,
+                    'normal': 3,
+                    'nice': 4,
+                    'good': 5
+                };
+
+                await toast.promise(
+                    addComment({
+                        ...values,
+                        rating: ratingMap[rating] || 5,
+                        blogSlug: slug,
+                        author: values.name
+                    }).unwrap(),
+                    {
+                        loading: 'Posting your thought...',
+                        success: 'Content added successfully! 🎉',
+                        error: 'Could not add content. Please try again. 😢',
+                    }
+                );
+
+                formik.resetForm();
+                setRating('good');
+            } catch (err) {
+                console.error('Failed to submit content:', err);
+            }
         },
     });
 
-    const currentIndex = blogs.findIndex(b => b.slug === resolvedParams.slug);
-    const prevBlog = blogs[(currentIndex - 1 + blogs.length) % blogs.length];
-    const nextBlog = blogs[(currentIndex + 1) % blogs.length];
+    if (isBlogLoading) {
+        return <BlogDetailSkeleton />;
+    }
 
-    const relatedBlogs = blogs.filter(b => b.id !== blog.id).slice(0, 4);
+    if (!blog) {
+        notFound();
+    }
+
+    // Derived data
+    const currentIndex = allBlogs.findIndex((b: any) => b.slug === slug);
+    const prevBlog = allBlogs.length > 0 ? allBlogs[(currentIndex - 1 + allBlogs.length) % allBlogs.length] : null;
+    const nextBlog = allBlogs.length > 0 ? allBlogs[(currentIndex + 1) % allBlogs.length] : null;
+
+    const relatedBlogs = allBlogs.filter((b: any) => b.slug !== slug).slice(0, 4);
+    const exploreMore = allBlogs.filter((b: any) => b.slug !== slug).slice(0, 3);
 
     return (
         <div className="bg-white text-gray-900 font-sans min-h-screen animate-fade-in">
@@ -263,7 +317,7 @@ export default function BlogPost({ params }: PageProps) {
                                 {blog.excerpt}
                             </p>
 
-                            {blog.content.slice(0, 2).map((paragraph, index) => (
+                            {blog.content.slice(0, 2).map((paragraph: string, index: number) => (
                                 <p key={index} className="mb-6 text-base leading-relaxed">
                                     {paragraph}
                                 </p>
@@ -276,7 +330,7 @@ export default function BlogPost({ params }: PageProps) {
                                 </p>
                             </div>
 
-                            {blog.content.slice(2).map((paragraph, index) => (
+                            {blog.content.slice(2).map((paragraph: string, index: number) => (
                                 <p key={index} className="mb-6 text-base leading-relaxed">
                                     {paragraph}
                                 </p>
@@ -287,27 +341,29 @@ export default function BlogPost({ params }: PageProps) {
                         <AuthorSlider />
 
                         {/* Navigation Buttons */}
-                        <div className="border-t border-gray-200 pt-8 mb-12 flex flex-col sm:flex-row justify-between items-start gap-6">
-                            <Link href={`/blog/${prevBlog.slug}`} className="w-full sm:w-[45%] group cursor-pointer">
-                                <div className="flex flex-col items-start gap-3">
-                                    <button className="flex items-center gap-2 px-6 py-2 border border-gray-900 rounded-sm hover:bg-gray-900 hover:text-white transition-all duration-300">
-                                        <ChevronLeft className="w-4 h-4" />
-                                        <span className="font-medium">Previous</span>
-                                    </button>
-                                    <span className="text-sm text-gray-500 line-clamp-1 group-hover:text-blue-600 transition-colors">{prevBlog.title}</span>
-                                </div>
-                            </Link>
+                        {prevBlog && nextBlog && (
+                            <div className="border-t border-gray-200 pt-8 mb-12 flex flex-col sm:flex-row justify-between items-start gap-6">
+                                <Link href={`/blog/${prevBlog.slug}`} className="w-full sm:w-[45%] group cursor-pointer">
+                                    <div className="flex flex-col items-start gap-3">
+                                        <button className="flex items-center gap-2 px-6 py-2 border border-gray-900 rounded-sm hover:bg-gray-900 hover:text-white transition-all duration-300">
+                                            <ChevronLeft className="w-4 h-4" />
+                                            <span className="font-medium">Previous</span>
+                                        </button>
+                                        <span className="text-sm text-gray-500 line-clamp-1 group-hover:text-blue-600 transition-colors">{prevBlog.title}</span>
+                                    </div>
+                                </Link>
 
-                            <Link href={`/blog/${nextBlog.slug}`} className="w-full sm:w-[45%] group cursor-pointer">
-                                <div className="flex flex-col items-end gap-3">
-                                    <button className="flex items-center gap-2 px-6 py-2 border border-gray-900 rounded-sm hover:bg-gray-900 hover:text-white transition-all duration-300">
-                                        <span className="font-medium">Next</span>
-                                        <ArrowRight className="w-4 h-4" />
-                                    </button>
-                                    <span className="text-sm text-gray-500 line-clamp-1 text-right group-hover:text-blue-600 transition-colors">{nextBlog.title}</span>
-                                </div>
-                            </Link>
-                        </div>
+                                <Link href={`/blog/${nextBlog.slug}`} className="w-full sm:w-[45%] group cursor-pointer">
+                                    <div className="flex flex-col items-end gap-3">
+                                        <button className="flex items-center gap-2 px-6 py-2 border border-gray-900 rounded-sm hover:bg-gray-900 hover:text-white transition-all duration-300">
+                                            <span className="font-medium">Next</span>
+                                            <ArrowRight className="w-4 h-4" />
+                                        </button>
+                                        <span className="text-sm text-gray-500 line-clamp-1 text-right group-hover:text-blue-600 transition-colors">{nextBlog.title}</span>
+                                    </div>
+                                </Link>
+                            </div>
+                        )}
                     </div>
 
                     {/* Sidebar Column */}
@@ -316,20 +372,22 @@ export default function BlogPost({ params }: PageProps) {
                         <div>
                             <h3 className="text-xl font-bold mb-8 text-gray-900">Explore more</h3>
                             <div className="space-y-10">
-                                {exploreMore.map((item) => (
-                                    <div key={item.id} className="group cursor-pointer">
-                                        <div className="relative w-full h-48 rounded-sm overflow-hidden mb-4">
-                                            <Image src={item.image} alt={item.title} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
+                                {exploreMore.map((item: any) => (
+                                    <Link key={item._id || item.id} href={`/blog/${item.slug}`}>
+                                        <div className="group cursor-pointer mb-6">
+                                            <div className="relative w-full h-48 rounded-sm overflow-hidden mb-4">
+                                                <Image src={item.heroImage} alt={item.title} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
+                                            </div>
+                                            <div className="flex items-center gap-3 text-xs text-gray-500 mb-2">
+                                                <span className="font-bold text-gray-900">{item.category}</span>
+                                                <span className="w-px h-3 bg-gray-300"></span>
+                                                <span>{item.date}</span>
+                                            </div>
+                                            <h4 className="text-base font-medium leading-snug text-gray-900 group-hover:text-blue-600 transition-colors">
+                                                {item.title}
+                                            </h4>
                                         </div>
-                                        <div className="flex items-center gap-3 text-xs text-gray-500 mb-2">
-                                            <span className="font-bold text-gray-900">{item.category}</span>
-                                            <span className="w-px h-3 bg-gray-300"></span>
-                                            <span>{item.date}</span>
-                                        </div>
-                                        <h4 className="text-base font-medium leading-snug text-gray-900 group-hover:text-blue-600 transition-colors">
-                                            {item.title}
-                                        </h4>
-                                    </div>
+                                    </Link>
                                 ))}
                             </div>
                         </div>
@@ -338,8 +396,8 @@ export default function BlogPost({ params }: PageProps) {
                         <div>
                             <h3 className="text-xl font-bold mb-8 text-gray-900">Tour Guides</h3>
                             <div className="space-y-6">
-                                {tourGuides.map((guide, index) => (
-                                    <div key={guide.id} className={`group cursor-pointer ${index !== tourGuides.length - 1 ? 'border-b border-gray-100 pb-6' : ''}`}>
+                                {tourGuides.map((guide: any, index: number) => (
+                                    <div key={guide._id || guide.id} className={`group cursor-pointer ${index !== tourGuides.length - 1 ? 'border-b border-gray-100 pb-6' : ''}`}>
                                         <div className="flex gap-4 items-start mb-3">
                                             <div className="relative w-14 h-14 rounded-full overflow-hidden flex-shrink-0 ring-2 ring-transparent group-hover:ring-blue-100 transition-all">
                                                 <Image src={guide.avatar} alt={guide.name} fill className="object-cover" />
@@ -353,7 +411,7 @@ export default function BlogPost({ params }: PageProps) {
                                             </div>
                                         </div>
 
-                                        {/* Rating Section - Moved below */}
+                                        {/* Rating Section */}
                                         <div className="flex items-center gap-2 pl-[72px]">
                                             <div className="flex text-yellow-400 gap-0.5">
                                                 {[...Array(5)].map((_, i) => (
@@ -373,43 +431,52 @@ export default function BlogPost({ params }: PageProps) {
                 <div className="mt-20 mb-16 animate-slide-up delay-300">
                     <h3 className="text-xl font-bold mb-8 flex items-center gap-3">
                         <span className="w-1 h-5 bg-black rounded-full"></span>
-                        Comments
+                        Comments ({isCommentsLoading ? '...' : comments.length})
                     </h3>
-                    <div className="space-y-8">
-                        {comments.map((comment, index) => (
-                            <div key={comment.id} className={`flex gap-6 ${index !== comments.length - 1 ? 'border-b border-gray-100 pb-8' : ''}`}>
-                                <div className="relative w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
-                                    <Image src={comment.avatar} alt={comment.author} fill className="object-cover" />
-                                </div>
-                                <div className="flex-1">
-                                    <div className="flex flex-wrap items-center justify-between mb-2">
-                                        <div className="flex items-center gap-3">
-                                            <span className="font-bold text-base text-gray-900">{comment.author}</span>
-                                            <div className="flex items-center gap-2">
-                                                <div className="flex text-yellow-400 gap-0.5">
-                                                    {[...Array(5)].map((_, i) => (
-                                                        <Star key={i} className={`w-3.5 h-3.5 ${i < comment.rating ? 'fill-current' : 'text-gray-200 fill-gray-200'}`} />
-                                                    ))}
-                                                </div>
-                                                <span className="text-xs text-gray-500 font-medium">({comment.rating}.0)</span>
-                                            </div>
+
+                    {isCommentsLoading ? (
+                        <CommentSkeleton />
+                    ) : (
+                        <div className="space-y-8">
+                            {comments.length === 0 ? (
+                                <p className="text-gray-500 italic">No comments yet. Be the first to share your thoughts!</p>
+                            ) : (
+                                comments.map((comment: any, index: number) => (
+                                    <div key={comment._id || comment.id} className={`flex gap-6 ${index !== comments.length - 1 ? 'border-b border-gray-100 pb-8' : ''}`}>
+                                        <div className="relative w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
+                                            <Image src={comment.avatar} alt={comment.author} fill className="object-cover" />
                                         </div>
-                                        <span className="text-xs text-gray-400 font-medium">{comment.date}</span>
+                                        <div className="flex-1">
+                                            <div className="flex flex-wrap items-center justify-between mb-2">
+                                                <div className="flex items-center gap-3">
+                                                    <span className="font-bold text-base text-gray-900">{comment.author}</span>
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="flex text-yellow-400 gap-0.5">
+                                                            {[...Array(5)].map((_, i) => (
+                                                                <Star key={i} className={`w-3.5 h-3.5 ${i < comment.rating ? 'fill-current' : 'text-gray-200 fill-gray-200'}`} />
+                                                            ))}
+                                                        </div>
+                                                        <span className="text-xs text-gray-500 font-medium">({comment.rating}.0)</span>
+                                                    </div>
+                                                </div>
+                                                <span className="text-xs text-gray-400 font-medium">{comment.date}</span>
+                                            </div>
+                                            <p className="text-sm text-gray-600 leading-relaxed font-medium">
+                                                {comment.content}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <p className="text-sm text-gray-600 leading-relaxed font-medium">
-                                        {comment.content}
-                                    </p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                                ))
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 {/* Add Comment Form */}
                 <div className="mb-20 animate-slide-up delay-500">
                     <h3 className="text-xl font-bold mb-8 text-gray-900 flex items-center gap-3">
                         <span className="w-1 h-5 bg-black rounded-full"></span>
-                        Add A Comment
+                        Add Content
                     </h3>
                     <form onSubmit={formik.handleSubmit} className="space-y-6">
                         <div className="flex flex-col md:flex-row gap-8">
@@ -449,17 +516,17 @@ export default function BlogPost({ params }: PageProps) {
 
                             {/* Right Column: Comment */}
                             <div className="flex-1 flex flex-col">
-                                <label className="block text-sm font-bold text-gray-600 mb-3">Comment</label>
+                                <label className="block text-sm font-bold text-gray-600 mb-3">Content</label>
                                 <textarea
-                                    name="comment"
+                                    name="content"
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
-                                    value={formik.values.comment}
+                                    value={formik.values.content}
                                     className="w-full flex-1 bg-[#F5F5F5] border-none rounded-xl px-6 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all resize-none placeholder:text-gray-400 min-h-[180px]"
                                     placeholder="Search Anything..."
                                 />
-                                {formik.touched.comment && formik.errors.comment && (
-                                    <p className="text-red-500 text-xs mt-1 pl-2">{formik.errors.comment}</p>
+                                {formik.touched.content && formik.errors.content && (
+                                    <p className="text-red-500 text-xs mt-1 pl-2">{formik.errors.content}</p>
                                 )}
                             </div>
                         </div>
@@ -491,54 +558,55 @@ export default function BlogPost({ params }: PageProps) {
                     </form>
                 </div>
 
-                {/* Related Articles */}
-                {relatedBlogs.length > 0 && (
-                    <div className="bg-[#F5F5F6] py-16 md:py-20 animate-slide-up delay-500">
-                        <div className="container mx-auto px-4 md:px-6">
-                            <h2 className="text-3xl md:text-4xl font-semibold text-gray-900 mb-12 text-center" style={{ fontFamily: 'Lato, sans-serif', letterSpacing: '1px' }}>
-                                Related articles
-                            </h2>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-                                {relatedBlogs.map((article) => (
-                                    <Link key={article.id} href={`/blog/${article.slug}`}>
-                                        <div className="bg-white overflow-hidden group cursor-pointer h-full flex flex-col hover:-translate-y-1 transition-transform duration-300">
-                                            {/* Image */}
-                                            <div className="relative h-48 w-full overflow-hidden bg-gray-200">
-                                                <Image
-                                                    src={article.heroImage}
-                                                    alt={article.title}
-                                                    fill
-                                                    className="object-cover"
-                                                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                                                />
-                                            </div>
+            </div>
 
-                                            {/* Content */}
-                                            <div className="p-4 flex-1 flex flex-col">
-                                                {/* Title */}
-                                                <h3 className="font-semibold text-base mb-3 leading-snug text-gray-900 line-clamp-2 group-hover:text-blue-600 transition-colors" style={{ fontFamily: 'Lato, sans-serif', letterSpacing: '1px' }}>
-                                                    {article.title}
-                                                </h3>
+            {/* Related Articles */}
+            {relatedBlogs.length > 0 && (
+                <div className="bg-[#F5F5F6] py-16 md:py-20 animate-slide-up delay-500 w-full">
+                    <div className="container mx-auto px-4 md:px-6">
+                        <h2 className="text-3xl md:text-4xl font-semibold text-gray-900 mb-12 text-center" style={{ fontFamily: 'Lato, sans-serif', letterSpacing: '1px' }}>
+                            Related articles
+                        </h2>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+                            {relatedBlogs.map((article: any) => (
+                                <Link key={article._id || article.id} href={`/blog/${article.slug}`}>
+                                    <div className="overflow-hidden group cursor-pointer h-full flex flex-col hover:-translate-y-1 transition-transform duration-300">
+                                        {/* Image */}
+                                        <div className="relative h-48 w-full overflow-hidden bg-gray-200">
+                                            <Image
+                                                src={article.heroImage}
+                                                alt={article.title}
+                                                fill
+                                                className="object-cover"
+                                                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                                            />
+                                        </div>
 
-                                                {/* Excerpt */}
-                                                <p className="text-sm text-gray-600 mb-4 line-clamp-3 leading-relaxed flex-1" style={{ fontFamily: 'Lato, sans-serif', letterSpacing: '1px' }}>
-                                                    {article.excerpt}
-                                                </p>
+                                        {/* Content */}
+                                        <div className="p-4 flex-1 flex flex-col">
+                                            {/* Title */}
+                                            <h3 className="font-semibold text-base mb-3 leading-snug text-gray-900 line-clamp-2 group-hover:text-blue-600 transition-colors" style={{ fontFamily: 'Lato, sans-serif', letterSpacing: '1px' }}>
+                                                {article.title}
+                                            </h3>
 
-                                                {/* Author */}
-                                                <div className="flex items-center gap-1 text-sm text-gray-900" style={{ fontFamily: 'Lato, sans-serif', letterSpacing: '1px' }}>
-                                                    <span className="font-medium">By</span>
-                                                    <span className="font-medium">{article.author.name}</span>
-                                                </div>
+                                            {/* Excerpt */}
+                                            <p className="text-sm text-gray-600 mb-4 line-clamp-3 leading-relaxed flex-1" style={{ fontFamily: 'Lato, sans-serif', letterSpacing: '1px' }}>
+                                                {article.excerpt}
+                                            </p>
+
+                                            {/* Author */}
+                                            <div className="flex items-center gap-1 text-sm text-gray-900" style={{ fontFamily: 'Lato, sans-serif', letterSpacing: '1px' }}>
+                                                <span className="font-medium">By</span>
+                                                <span className="font-medium">{article.author.name}</span>
                                             </div>
                                         </div>
-                                    </Link>
-                                ))}
-                            </div>
+                                    </div>
+                                </Link>
+                            ))}
                         </div>
                     </div>
-                )}
-            </div>
+                </div>
+            )}
         </div>
     );
 }

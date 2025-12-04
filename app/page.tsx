@@ -3,10 +3,27 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Clock, ArrowRight, MapPin } from 'lucide-react';
-import blogsData from '@/data/blogs.json';
+import { useGetBlogsQuery } from '@/lib/features/api/apiSlice';
+import { Loader2 } from 'lucide-react';
 
 export default function Home() {
-  const { blogs } = blogsData;
+  const { data: blogs = [], isLoading, error } = useGetBlogsQuery(undefined);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <Loader2 className="w-10 h-10 animate-spin text-gray-900" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white text-red-500">
+        Failed to load blogs. Please try again later.
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white overflow-hidden">
@@ -22,6 +39,11 @@ export default function Home() {
               Discover inspiring travel stories, expert guides, and hidden gems from around the globe.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-500 animate-slide-up delay-200">
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4" />
+                <span>50+ Destinations</span>
+              </div>
+              <span className="hidden sm:inline opacity-30">•</span>
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4" />
                 <span>Updated Weekly</span>
@@ -45,9 +67,9 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10 lg:gap-12">
-          {blogs.map((blog, index) => (
+          {blogs.map((blog: any, index: number) => (
             <Link
-              key={blog.id}
+              key={blog._id || blog.id}
               href={`/blog/${blog.slug}`}
               className="group block h-full animate-slide-up"
               style={{ animationDelay: `${index * 100}ms` }}

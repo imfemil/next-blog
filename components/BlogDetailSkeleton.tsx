@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 
 export const BlogDetailSkeleton = () => {
     return (
-        <div className="bg-white min-h-screen animate-pulse">
+        <div className="bg-background min-h-screen animate-pulse">
             {/* Breadcrumb & Title */}
             <div className="container mx-auto px-4 py-8 md:py-12 md:px-6 text-center max-w-4xl">
                 <div className="flex justify-center mb-4">
@@ -29,7 +29,7 @@ export const BlogDetailSkeleton = () => {
                     {/* Main Content Column */}
                     <div className="lg:col-span-8">
                         {/* Article Header Meta */}
-                        <div className="flex items-center justify-between py-6 border-b border-gray-100 mb-8">
+                        <div className="flex items-center justify-between py-6 border-b border-border mb-8">
                             <div className="flex items-center gap-3">
                                 <Skeleton className="w-8 h-8 rounded-full" />
                                 <Skeleton className="h-4 w-32" />
@@ -44,7 +44,7 @@ export const BlogDetailSkeleton = () => {
                             <Skeleton className="h-4 w-full" />
                             <Skeleton className="h-4 w-5/6" />
 
-                            <div className="py-8 my-10 border-y border-gray-100">
+                            <div className="py-8 my-10 border-y border-border">
                                 <Skeleton className="h-8 w-3/4 mx-auto" />
                             </div>
 
@@ -54,7 +54,7 @@ export const BlogDetailSkeleton = () => {
                         </div>
 
                         {/* Author Bio Slider Placeholder */}
-                        <div className="border-t border-gray-100 pt-12 mt-12 mb-12 flex flex-col items-center">
+                        <div className="border-t border-border pt-12 mt-12 mb-12 flex flex-col items-center">
                             <Skeleton className="h-6 w-40 mb-2" />
                             <Skeleton className="h-4 w-24 mb-6" />
                             <Skeleton className="w-24 h-24 rounded-full mb-6" />
@@ -87,7 +87,7 @@ export const BlogDetailSkeleton = () => {
                             <Skeleton className="h-8 w-40 mb-8" />
                             <div className="space-y-6">
                                 {[1, 2, 3].map((i) => (
-                                    <div key={i} className="flex gap-4 items-start pb-6 border-b border-gray-100 last:border-0">
+                                    <div key={i} className="flex gap-4 items-start pb-6 border-b border-border last:border-0">
                                         <Skeleton className="w-14 h-14 rounded-full flex-shrink-0" />
                                         <div className="flex-1 pt-1 space-y-2">
                                             <Skeleton className="h-4 w-32" />

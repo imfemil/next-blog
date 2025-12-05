@@ -4,7 +4,6 @@ import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { Star, MapPin, ChevronLeft, ArrowRight, User, Clock } from 'lucide-react';
 import { CommentSkeleton } from '@/components/CommentsSection';
-import { Skeleton } from '@/components/ui/Skeleton';
 
 const AuthorSlider = dynamic(() => import('@/components/AuthorSlider/AuthorSlider').then(mod => mod.AuthorSlider), {
     loading: () => <div className="w-full h-80 bg-gray-100 animate-pulse rounded-xl my-12" />
@@ -74,7 +73,7 @@ export default async function BlogPost({ params }: PageProps) {
     const exploreMore = allBlogs.filter((b) => b.slug !== slug).slice(0, 3);
 
     return (
-        <div className="bg-white text-gray-900 font-sans min-h-screen animate-fade-in">
+        <div className="bg-background text-foreground font-sans min-h-screen animate-fade-in">
             {/* Breadcrumb & Title */}
             <div className={styles.header}>
                 <div className={styles.breadcrumb}>
@@ -144,7 +143,7 @@ export default async function BlogPost({ params }: PageProps) {
                             {/* Styled Quote Section */}
                             <div className={styles['quote-box']}>
                                 <p className={styles.quote}>
-                                    "{blog.quote}"
+                                    &quot;{blog.quote}&quot;
                                 </p>
                             </div>
 
@@ -209,8 +208,8 @@ export default async function BlogPost({ params }: PageProps) {
                                                 <Image src={item.heroImage} alt={item.title} fill className="object-cover hover:scale-105 transition-transform duration-700" />
                                             </div>
                                             <div className={styles['explore-meta']}>
-                                                <span className="font-bold text-gray-900">{item.category}</span>
-                                                <span className="w-px h-3 bg-gray-300"></span>
+                                                <span className="font-bold text-foreground">{item.category}</span>
+                                                <span className="w-px h-3 bg-border"></span>
                                                 <span>{item.date}</span>
                                             </div>
                                             <h4 className={styles['explore-title']}>
@@ -227,14 +226,14 @@ export default async function BlogPost({ params }: PageProps) {
                             <h2 className={styles['widget-title']}>Tour Guides</h2>
                             <div className="space-y-6">
                                 {tourGuides.map((guide, index) => (
-                                    <div key={guide._id} className={`${index !== tourGuides.length - 1 ? 'border-b border-gray-100 pb-6' : ''}`}>
+                                    <div key={guide._id} className={`${index !== tourGuides.length - 1 ? 'border-b border-border pb-6' : ''}`}>
                                         <div className="flex gap-4 items-start mb-3">
                                             <div className="relative w-14 h-14 rounded-full overflow-hidden flex-shrink-0 ring-2 ring-transparent transition-all">
                                                 <Image src={guide.avatar} alt={guide.name} fill className="object-cover" />
                                             </div>
                                             <div className="flex-1 min-w-0 pt-1">
-                                                <h4 className="font-medium text-gray-900 mb-1 transition-colors">{guide.name}</h4>
-                                                <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                                                <h4 className="font-medium text-foreground mb-1 transition-colors">{guide.name}</h4>
+                                                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                                                     <MapPin className="w-3 h-3 flex-shrink-0" aria-hidden="true" />
                                                     <span className="truncate">{guide.location}</span>
                                                 </div>
@@ -245,10 +244,10 @@ export default async function BlogPost({ params }: PageProps) {
                                         <div className="flex items-center gap-2">
                                             <div className="flex text-yellow-400 gap-0.5" aria-label={`Rating: ${guide.rating} out of 5 stars`}>
                                                 {[...Array(5)].map((_, i) => (
-                                                    <Star key={i} className={`w-5 h-5 ${i < Math.floor(guide.rating) ? 'fill-current' : 'text-gray-200 fill-gray-200'}`} aria-hidden="true" />
+                                                    <Star key={i} className={`w-5 h-5 ${i < Math.floor(guide.rating) ? 'fill-current' : 'text-muted fill-muted'}`} aria-hidden="true" />
                                                 ))}
                                             </div>
-                                            <span className="text-xs text-gray-500">({guide.rating})</span>
+                                            <span className="text-xs text-muted-foreground">({guide.rating})</span>
                                         </div>
                                     </div>
                                 ))}
@@ -264,9 +263,9 @@ export default async function BlogPost({ params }: PageProps) {
 
             {/* Related Articles */}
             {relatedBlogs.length > 0 && (
-                <div className="bg-[#F5F5F6] py-16 md:py-20 animate-slide-up delay-500 w-full">
+                <div className="bg-secondary py-16 md:py-20 animate-slide-up delay-500 w-full">
                     <div className="container mx-auto px-4 md:px-6">
-                        <h2 className="text-3xl md:text-4xl font-semibold text-gray-900 mb-12 text-center" style={{ fontFamily: 'Lato, sans-serif', letterSpacing: '1px' }}>
+                        <h2 className="text-3xl md:text-4xl font-semibold text-foreground mb-12 text-center" style={{ fontFamily: 'Lato, sans-serif', letterSpacing: '1px' }}>
                             Related articles
                         </h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
@@ -274,7 +273,7 @@ export default async function BlogPost({ params }: PageProps) {
                                 <Link key={article._id} href={`/blog/${article.slug}`}>
                                     <div className="overflow-hidden group cursor-pointer h-full flex flex-col hover:-translate-y-1 transition-transform duration-300">
                                         {/* Image */}
-                                        <div className="relative h-48 w-full overflow-hidden bg-gray-200">
+                                        <div className="relative h-48 w-full overflow-hidden bg-muted">
                                             <Image
                                                 src={article.heroImage}
                                                 alt={article.title}
@@ -287,17 +286,17 @@ export default async function BlogPost({ params }: PageProps) {
                                         {/* Content */}
                                         <div className="p-4 flex-1 flex flex-col">
                                             {/* Title */}
-                                            <h3 className="font-semibold text-base mb-3 leading-snug text-gray-900 line-clamp-2 group-hover:text-blue-600 transition-colors" style={{ fontFamily: 'Lato, sans-serif', letterSpacing: '1px' }}>
+                                            <h3 className="font-semibold text-base mb-3 leading-snug text-foreground line-clamp-2 group-hover:text-blue-600 transition-colors" style={{ fontFamily: 'Lato, sans-serif', letterSpacing: '1px' }}>
                                                 {article.title}
                                             </h3>
 
                                             {/* Excerpt */}
-                                            <p className="text-sm text-gray-600 mb-4 line-clamp-3 leading-relaxed flex-1" style={{ fontFamily: 'Lato, sans-serif', letterSpacing: '1px' }}>
+                                            <p className="text-sm text-muted-foreground mb-4 line-clamp-3 leading-relaxed flex-1" style={{ fontFamily: 'Lato, sans-serif', letterSpacing: '1px' }}>
                                                 {article.excerpt}
                                             </p>
 
                                             {/* Author */}
-                                            <div className="flex items-center gap-1 text-sm text-gray-900" style={{ fontFamily: 'Lato, sans-serif', letterSpacing: '1px' }}>
+                                            <div className="flex items-center gap-1 text-sm text-foreground" style={{ fontFamily: 'Lato, sans-serif', letterSpacing: '1px' }}>
                                                 <span className="font-medium">By</span>
                                                 <span className="font-medium">{article.author.name}</span>
                                             </div>

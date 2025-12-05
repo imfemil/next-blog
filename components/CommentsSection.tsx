@@ -8,7 +8,6 @@ import { Star, Frown, Meh, Smile, SmilePlus, Laugh } from 'lucide-react';
 import { useGetCommentsQuery, useAddCommentMutation } from '@/lib/features/api/apiSlice';
 import { Skeleton } from '@/components/ui/Skeleton';
 import toast from 'react-hot-toast';
-import styles from '@/app/blog/[slug]/blog.module.css';
 
 // Enhanced Rating Selector matching the design
 const RatingSelector = ({ value, onChange }: { value: string; onChange: (val: string) => void }) => {
@@ -34,7 +33,7 @@ const RatingSelector = ({ value, onChange }: { value: string; onChange: (val: st
                         aria-pressed={isSelected}
                         className={`flex items-center gap-2 transition-all duration-300 ${isSelected
                             ? `${rating.color} text-white px-4 py-3 rounded-xl shadow-sm`
-                            : `bg-transparent p-2 hover:bg-gray-100 rounded-full`
+                            : `bg-transparent p-2 hover:bg-muted rounded-full`
                             }`}
                     >
                         <Icon className={`w-5 h-5 ${isSelected ? 'text-white' : rating.iconColor}`} aria-hidden="true" />
@@ -125,7 +124,7 @@ export function CommentsSection({ slug }: CommentsSectionProps) {
             {/* Comments Section */}
             <div className="mt-20 mb-16 animate-slide-up delay-300">
                 <h2 className="text-xl font-bold mb-8 flex items-center gap-3">
-                    <span className="w-1 h-5 bg-black rounded-full"></span>
+                    <span className="w-1 h-5 bg-foreground rounded-full"></span>
                     Comments ({isCommentsLoading ? '...' : comments.length})
                 </h2>
 
@@ -134,29 +133,29 @@ export function CommentsSection({ slug }: CommentsSectionProps) {
                 ) : (
                     <div className="space-y-8">
                         {comments.length === 0 ? (
-                            <p className="text-gray-500 italic">No comments yet. Be the first to share your thoughts!</p>
+                            <p className="text-muted-foreground italic">No comments yet. Be the first to share your thoughts!</p>
                         ) : (
                             comments.map((comment: any, index: number) => (
-                                <div key={comment._id || comment.id} className={`flex gap-6 ${index !== comments.length - 1 ? 'border-b border-gray-100 pb-8' : ''}`}>
+                                <div key={comment._id || comment.id} className={`flex gap-6 ${index !== comments.length - 1 ? 'border-b border-border pb-8' : ''}`}>
                                     <div className="relative w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
                                         <Image src={comment.avatar} alt={comment.author} fill className="object-cover" />
                                     </div>
                                     <div className="flex-1">
                                         <div className="flex flex-wrap items-center justify-between mb-2">
                                             <div className="flex items-center gap-3">
-                                                <span className="font-bold text-base text-gray-900">{comment.author}</span>
+                                                <span className="font-bold text-base text-foreground">{comment.author}</span>
                                                 <div className="flex items-center gap-2">
                                                     <div className="flex text-yellow-400 gap-0.5">
                                                         {[...Array(5)].map((_, i) => (
-                                                            <Star key={i} className={`w-3.5 h-3.5 ${i < comment.rating ? 'fill-current' : 'text-gray-200 fill-gray-200'}`} />
+                                                            <Star key={i} className={`w-3.5 h-3.5 ${i < comment.rating ? 'fill-current' : 'text-muted fill-muted'}`} />
                                                         ))}
                                                     </div>
-                                                    <span className="text-xs text-gray-500 font-medium">({comment.rating}.0)</span>
+                                                    <span className="text-xs text-muted-foreground font-medium">({comment.rating}.0)</span>
                                                 </div>
                                             </div>
-                                            <span className="text-xs text-gray-500 font-medium">{comment.date}</span>
+                                            <span className="text-xs text-muted-foreground font-medium">{comment.date}</span>
                                         </div>
-                                        <p className="text-sm text-gray-600 leading-relaxed font-medium">
+                                        <p className="text-sm text-muted-foreground leading-relaxed font-medium">
                                             {comment.content}
                                         </p>
                                     </div>
@@ -169,8 +168,8 @@ export function CommentsSection({ slug }: CommentsSectionProps) {
 
             {/* Add Comment Form */}
             <div className="mb-20 animate-slide-up delay-500">
-                <h2 className="text-xl font-bold mb-8 text-gray-900 flex items-center gap-3">
-                    <span className="w-1 h-5 bg-black rounded-full"></span>
+                <h2 className="text-xl font-bold mb-8 text-foreground flex items-center gap-3">
+                    <span className="w-1 h-5 bg-foreground rounded-full"></span>
                     Add Content
                 </h2>
                 <form onSubmit={formik.handleSubmit} className="space-y-6">
@@ -178,7 +177,7 @@ export function CommentsSection({ slug }: CommentsSectionProps) {
                         {/* Left Column: Name & Email */}
                         <div className="flex-1 space-y-6">
                             <div>
-                                <label htmlFor="name-input" className="block text-sm font-bold text-gray-600 mb-3">Name</label>
+                                <label htmlFor="name-input" className="block text-sm font-bold text-muted-foreground mb-3">Name</label>
                                 <input
                                     id="name-input"
                                     name="name"
@@ -186,7 +185,7 @@ export function CommentsSection({ slug }: CommentsSectionProps) {
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
                                     value={formik.values.name}
-                                    className="w-full bg-[#F5F5F5] border-none rounded-xl px-6 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all placeholder:text-gray-400"
+                                    className="w-full bg-secondary border-none rounded-xl px-6 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-all placeholder:text-muted-foreground"
                                     placeholder=""
                                 />
                                 {formik.touched.name && formik.errors.name && (
@@ -194,7 +193,7 @@ export function CommentsSection({ slug }: CommentsSectionProps) {
                                 )}
                             </div>
                             <div>
-                                <label htmlFor="email-input" className="block text-sm font-bold text-gray-600 mb-3">Email</label>
+                                <label htmlFor="email-input" className="block text-sm font-bold text-muted-foreground mb-3">Email</label>
                                 <input
                                     id="email-input"
                                     name="email"
@@ -202,7 +201,7 @@ export function CommentsSection({ slug }: CommentsSectionProps) {
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
                                     value={formik.values.email}
-                                    className="w-full bg-[#F5F5F5] border-none rounded-xl px-6 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all placeholder:text-gray-400"
+                                    className="w-full bg-secondary border-none rounded-xl px-6 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-all placeholder:text-muted-foreground"
                                     placeholder=""
                                 />
                                 {formik.touched.email && formik.errors.email && (
@@ -213,14 +212,14 @@ export function CommentsSection({ slug }: CommentsSectionProps) {
 
                         {/* Right Column: Comment */}
                         <div className="flex-1 flex flex-col">
-                            <label htmlFor="content-input" className="block text-sm font-bold text-gray-600 mb-3">Content</label>
+                            <label htmlFor="content-input" className="block text-sm font-bold text-muted-foreground mb-3">Content</label>
                             <textarea
                                 id="content-input"
                                 name="content"
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
                                 value={formik.values.content}
-                                className="w-full flex-1 bg-[#F5F5F5] border-none rounded-xl px-6 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all resize-none placeholder:text-gray-400 min-h-[180px]"
+                                className="w-full flex-1 bg-secondary border-none rounded-xl px-6 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-all resize-none placeholder:text-muted-foreground min-h-[180px]"
                                 placeholder="Search Anything..."
                             />
                             {formik.touched.content && formik.errors.content && (
@@ -232,8 +231,8 @@ export function CommentsSection({ slug }: CommentsSectionProps) {
                     {/* Bottom Bar: Rating & Send Button */}
                     <div className="flex flex-col md:flex-row items-center gap-4 pt-2">
                         {/* Rating Bar */}
-                        <div className="flex-1 w-full bg-[#F5F5F5] rounded-xl px-6 py-3 flex flex-col sm:flex-row items-center justify-between gap-4">
-                            <span id="rating-label" className="text-sm font-bold text-gray-700">Rate The Usefulness Of The Article</span>
+                        <div className="flex-1 w-full bg-secondary rounded-xl px-6 py-3 flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <span id="rating-label" className="text-sm font-bold text-foreground">Rate The Usefulness Of The Article</span>
                             <RatingSelector value={rating} onChange={setRating} />
                         </div>
 
@@ -241,7 +240,7 @@ export function CommentsSection({ slug }: CommentsSectionProps) {
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="cursor-pointer bg-black hover:bg-gray-800 text-white px-10 py-4 rounded-xl text-sm font-bold transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 min-w-[140px] w-full md:w-auto"
+                            className="cursor-pointer bg-foreground hover:bg-foreground/90 text-background px-10 py-4 rounded-xl text-sm font-bold transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 min-w-[140px] w-full md:w-auto"
                         >
                             {isSubmitting ? (
                                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
